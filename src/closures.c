@@ -163,6 +163,8 @@ ffi_closure_free (void *ptr)
 #define auth_ptr(p) p
 #endif
 
+#include "fficonfig_trampolines.h"
+
 typedef struct ffi_trampoline_table ffi_trampoline_table;
 typedef struct ffi_trampoline_table_entry ffi_trampoline_table_entry;
 
@@ -238,7 +240,7 @@ ffi_trampoline_table_alloc (void)
   static void *ffi_closure_trampoline_table_page;
 
   dispatch_once(&trampoline_template_init_once, ^{
-    void * const trampoline_handle = dlopen("/usr/lib/libffi-trampolines.dylib", RTLD_NOW | RTLD_LOCAL | RTLD_FIRST);
+    void * const trampoline_handle = dlopen(FFI_TRAMPOLINES_SHLIB_PATH, RTLD_NOW | RTLD_LOCAL | RTLD_FIRST);
     assert(trampoline_handle);
 
     ffi_closure_trampoline_table_page = dlsym(trampoline_handle, "ffi_closure_trampoline_table_page");

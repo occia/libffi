@@ -71,6 +71,7 @@ dnl The -no-testsuite modules omit the test subdir.
 AM_CONDITIONAL(TESTSUBDIR, test -d $srcdir/testsuite)
 
 TARGETDIR="unknown"
+TRAMPOLINES=""
 HAVE_LONG_DOUBLE_VARIANT=0
 
 . ${srcdir}/configure.host
@@ -111,6 +112,7 @@ AC_C_BIGENDIAN
 
 GCC_AS_CFI_PSEUDO_OP
 
+need_trampolines_shlib=no
 case "$TARGET" in
   SPARC)
     AC_CACHE_CHECK([assembler and linker support unaligned pc related relocs],
@@ -205,6 +207,9 @@ case "$target" in
 esac
 AM_CONDITIONAL(FFI_EXEC_TRAMPOLINE_TABLE, test x$FFI_EXEC_TRAMPOLINE_TABLE = x1)
 AC_SUBST(FFI_EXEC_TRAMPOLINE_TABLE)
+if test x$FFI_EXEC_TRAMPOLINE_TABLE = x1; then
+  need_trampolines_shlib=yes
+fi
 
 if test x$TARGET = xX86_64; then
     AC_CACHE_CHECK([toolchain supports unwind section type],
@@ -308,11 +313,17 @@ AC_SUBST(TARGETDIR)
 
 changequote(<,>)
 TARGET_OBJ=
+TRAMPOLINES_OBJ=
 for i in $SOURCES; do
   TARGET_OBJ="${TARGET_OBJ} src/${TARGETDIR}/"`echo $i | sed 's/[cS]$/lo/'`
 done
+for i in $TRAMPOLINES; do
+  TRAMPOLINES_OBJ="${TRAMPOLINES_OBJ} src/${TARGETDIR}/"`echo $i | sed 's/[cS]$/lo/'`
+done
 changequote([,])
 AC_SUBST(TARGET_OBJ)
+AC_SUBST(TRAMPOLINES_OBJ)
+AM_CONDITIONAL(LIBFFI_BUILD_TRAMPOLINES_SHLIB, test "$need_trampolines_shlib" = "yes")
 
 AC_SUBST(SHELL)
 

@@ -16,6 +16,7 @@ case "${host}" in
   aarch64*-*-*)
 	TARGET=AARCH64; TARGETDIR=aarch64
 	SOURCES="ffi.c sysv.S"
+	TRAMPOLINES="trampoline.S"
 	;;
 
   alpha*-*-*)

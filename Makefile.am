@@ -152,6 +152,21 @@ libffi.map: $(top_srcdir)/libffi.map.in
 libffi_la_LDFLAGS = -no-undefined $(libffi_version_info) $(libffi_version_script) $(LTLDFLAGS) $(AM_LTLDFLAGS)
 libffi_la_DEPENDENCIES = $(libffi_la_LIBADD) $(libffi_version_dep)
 
+if LIBFFI_BUILD_TRAMPOLINES_SHLIB
+toolexeclib_LTLIBRARIES += libffi-trampolines.la
+BUILT_SOURCES = fficonfig_trampolines.h
+endif
+
+libffi_trampolines_la_SOURCES =
+EXTRA_libffi_trampolines_la_SOURCES = src/aarch64/trampoline.S
+TRAMPOLINES_OBJ = @TRAMPOLINES_OBJ@
+libffi_trampolines_la_LIBADD = $(TRAMPOLINES_OBJ)
+libffi_trampolines_la_LDFLAGS = -no-undefined -shared $(libffi_version_info) $(LTLDFLAGS) $(AM_LTLDFLAGS)
+libffi_trampolines_la_DEPENDENCIES = $(libffi_trampolines_la_LIBADD) $(libffi_version_dep)
+
+fficonfig_trampolines.h: $(builddir)/libffi-trampolines.la
+	@echo "#define FFI_TRAMPOLINES_SHLIB_PATH \"$(libdir)/$(shell grep dlname= $< | cut -f2 -d"'")\"" > $@
+
 AM_CPPFLAGS = -I. -I$(top_srcdir)/include -Iinclude -I$(top_srcdir)/src
 AM_CCASFLAGS = $(AM_CPPFLAGS)
 
