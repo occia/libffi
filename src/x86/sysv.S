@@ -251,7 +251,7 @@ ENDF(ffi_call_i386)
 #endif
 
 #define FFI_CLOSURE_CALL_INNER(UWN) \
-	call	ffi_closure_inner
+	call	PLT(ffi_closure_inner)
 
 #define FFI_CLOSURE_MASK_AND_JUMP(N, UW)				\
 	andl	$X86_RET_TYPE_MASK, %eax;				\
